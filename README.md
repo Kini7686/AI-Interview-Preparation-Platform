@@ -8,23 +8,23 @@ Agent implementation rules: [`_bmad-output/project-context.md`](_bmad-output/pro
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+cp .env.example .env   # fill secrets locally — never commit `.env`
+npm install
+npx prisma migrate dev
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Authentication (feature `001-user-auth`)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Local Auth.js setup (Google + Resend magic link, Prisma sessions, Vitest/Playwright checks): see [`specs/001-user-auth/quickstart.md`](specs/001-user-auth/quickstart.md).
+
+```bash
+npm test          # Vitest domain/ownership helpers
+npm run test:e2e  # Playwright auth flows (needs app + env)
+```
 
 ## Learn More
 

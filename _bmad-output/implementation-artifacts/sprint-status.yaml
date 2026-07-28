@@ -1,0 +1,15 @@
+# generated: 2026-07-28
+# last_updated: 2026-07-28
+# SOURCE: BMAD create-story — first story selected without prior sprint-planning
+# Refresh via bmad-sprint-planning when full epic/story list is finalized
+
+# STATUS DEFINITIONS:
+#   backlog | ready-for-dev | in-progress | review | done
+
+project: ai-interview-platform
+
+development_status:
+  epic-1: in-progress
+  1-1-account-authentication: ready-for-dev
+  # Remaining Epic 1 stories (foundation) — add via sprint-planning / create-story
+  # epic-2 … epic-6 per preferred shape in epics.md frontmatter
