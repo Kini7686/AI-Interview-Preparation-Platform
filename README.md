@@ -1,139 +1,143 @@
 # AI Interview Preparation Platform
 
-Web app for **text-based mock interview practice**: sign in, set a target role, upload/edit a resume summary, run a turn-based interview, get a scored report, and review history.
+A web application that helps students, new graduates, and software engineers practice for interviews through structured, text-based mock sessions—grounded in their resume and target role—and receive measurable feedback they can track over time.
 
-Planned and delivered with **BMAD Method** + **GitHub Spec Kit**. Product requirements live under `_bmad-output/`; Spec Kit feature work under `specs/` and `.specify/`.
+This repository is not only an application codebase. It is also a working example of how **BMAD Method** and **GitHub Spec Kit** can drive product definition, architecture, and implementation in a consistent, agent-friendly workflow.
 
-## Features (current)
+---
 
-| Area | What you get |
-|------|----------------|
-| **Auth** | Google OAuth + Resend magic link (Auth.js), database sessions (30 days) |
-| **Profile** | Display name + default target role |
-| **Resume** | PDF/DOCX upload + editable summary (required before interview) |
-| **Interview** | Configure duration / question count / mix → answer turns → report |
-| **History** | Past sessions and reports |
-| **Dashboard** | Setup checklist + recent interviews |
+## What this project does
 
-Reports currently use a **local heuristic scorer** (no paid LLM required). A production LLM adapter can replace `src/lib/ai/client.ts` later.
+Candidates often get fragmented advice from chat tools and one-off mocks. This platform walks a user through a clear preparation loop:
 
-## Stack
+1. **Create an account** and sign in securely  
+2. **Set a profile** (display name and default target role)  
+3. **Provide a resume summary** so practice stays grounded in real experience  
+4. **Configure and run** a text mock interview for a chosen role  
+5. **Review a structured report** (clarity, structure, technical depth, relevance)  
+6. **Return to history** to compare sessions over time  
 
-- **Next.js 16** (App Router) · **React 19** · **TypeScript** · **Tailwind CSS 4**
-- **PostgreSQL** · **Prisma 6**
-- **Auth.js (next-auth v5)** · **Zod** · **Vitest** · **Playwright**
+The product is scoped as an MVP for individual learners: desktop-first responsive web, no video/voice interviewers, and a modular path toward production AI evaluation.
 
-## Prerequisites
+---
 
-- Node.js **20+**
-- PostgreSQL **15+** (local or hosted)
-- Optional for sign-in:
-  - **Google Cloud** OAuth client (recommended for multi-user login)
-  - **Resend** API key (magic link; free tier often limited to your own inbox without a verified domain)
+## How it was structured: BMAD + Spec Kit
 
-## Quick start
+### BMAD Method
+
+**BMAD** guided discovery and planning artifacts before code:
+
+| Artifact | Role |
+|----------|------|
+| Product brief | Problem, audience, and MVP boundaries |
+| PRD | Numbered functional requirements and feature slices |
+| Architecture spine | Invariants, layering, and tech decisions agents must obey |
+| Project context | Non-negotiable stack and coding rules for implementation |
+| Implementation stories | Ready-for-dev units such as account authentication |
+
+These live under `_bmad-output/` and `_bmad/`, so product intent stays versioned next to the code.
+
+### GitHub Spec Kit
+
+**Spec Kit** (`.specify/`, `specs/`) turned planning into executable feature contracts:
+
+| Piece | Role |
+|-------|------|
+| Constitution | Shared engineering principles (type safety, security, tests, accessibility, simplicity, traceability) |
+| Feature specs | Behavior-first specs (e.g. `specs/001-user-auth`) |
+| Plans & research | Stack choices and constraints for each feature |
+| Tasks | Ordered implementation checklist agents can execute |
+| Contracts / data model | Session ownership, auth HTTP behavior, entities |
+
+Together, BMAD answers *what to build and why*; Spec Kit answers *how to specify, gate, and implement it consistently*.
+
+---
+
+## Architecture at a glance
+
+The system is a **layered modular monolith** on the Next.js App Router:
+
+- **Presentation** — React Server Components and private app routes  
+- **Application** — Server Actions and route handlers for mutations  
+- **Domain** — Pure rules (interview lifecycle, validation, ownership)  
+- **Infrastructure** — Prisma/PostgreSQL, Auth.js, storage, AI facade  
+
+Private data is always scoped to the signed-in user. Auth uses Auth.js with database sessions; domain helpers enforce ownership on the server.
+
+High-level planning sources:
+
+- [`_bmad-output/project-context.md`](_bmad-output/project-context.md)  
+- [`_bmad-output/planning-artifacts/architecture/`](_bmad-output/planning-artifacts/architecture/)  
+- [`.specify/memory/constitution.md`](.specify/memory/constitution.md)  
+
+---
+
+## Tech stack
+
+| Layer | Choice |
+|-------|--------|
+| Framework | Next.js 16 (App Router), React 19 |
+| Language | TypeScript (strict) |
+| Styling | Tailwind CSS 4 |
+| Database | PostgreSQL + Prisma |
+| Auth | Auth.js (Google + email magic link) |
+| Validation | Zod |
+| Testing | Vitest, Playwright |
+
+---
+
+## Repository layout
+
+```text
+src/                     Application source (App Router, lib, server actions)
+prisma/                  Schema, migrations, seed data
+specs/                   Spec Kit feature packages
+.specify/                Constitution and Spec Kit tooling
+_bmad/                   BMAD method install
+_bmad-output/            Brief, PRD, architecture, stories, project context
+.cursor/skills/          Spec Kit agent skills
+```
+
+---
+
+## Getting started
 
 ```bash
-# 1. Install
 npm install
-
-# 2. Environment
-cp .env.example .env
-# Edit .env — see table below
-
-# 3. Database
-createdb ai_interview          # if needed
+cp .env.example .env    # fill local values — never commit .env
 npx prisma migrate dev
-npm run db:seed                # role catalog
-
-# 4. Run
+npm run db:seed
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
 
-### Environment variables
+Required local setup is documented in [`.env.example`](.env.example). Auth feature validation notes: [`specs/001-user-auth/quickstart.md`](specs/001-user-auth/quickstart.md).
 
-Copy from [`.env.example`](.env.example). **Never commit `.env`.**
-
-| Variable | Purpose |
-|----------|---------|
-| `DATABASE_URL` | Postgres connection string |
-| `AUTH_SECRET` | `openssl rand -base64 32` |
-| `AUTH_URL` | App origin (`http://localhost:3000` locally) |
-| `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Google OAuth Web client |
-| `AUTH_RESEND_KEY` / `EMAIL_FROM` | Magic-link email via Resend |
-
-**Google OAuth (local):**
-
-- Authorized JavaScript origin: `http://localhost:3000`
-- Authorized redirect URI: `http://localhost:3000/api/auth/callback/google`
-- While the consent screen is **Testing**, add Gmail accounts under **Test users**
-
-**Resend note:** With `onboarding@resend.dev`, delivery is often limited to your Resend account email. For any user’s inbox, verify your own domain—or use Google sign-in.
-
-## App routes
-
-| Path | Access |
-|------|--------|
-| `/` | Public home |
-| `/sign-in` | Sign in (Google + email link) |
-| `/dashboard` | Private hub |
-| `/profile` | Profile + default role |
-| `/resume` | Upload + summary |
-| `/interview` | Start a mock |
-| `/interview/[id]` | Active session |
-| `/interview/[id]/report` | Scores + transcript |
-| `/history` | Past interviews |
-
-## Scripts
+### Useful scripts
 
 ```bash
-npm run dev          # local server
+npm run dev          # development server
 npm run build        # production build
-npm run start        # serve production build
-npm run lint         # ESLint
-npm test             # Vitest
-npm run test:e2e     # Playwright
-npm run db:migrate   # Prisma migrate
+npm test             # unit / domain tests
+npm run test:e2e     # end-to-end tests
+npm run db:migrate   # apply Prisma migrations
 npm run db:seed      # seed role catalog
 ```
 
-Auth feature validation notes: [`specs/001-user-auth/quickstart.md`](specs/001-user-auth/quickstart.md).
+---
 
-## Project layout
+## Product & planning docs
 
-```text
-src/app/                 # App Router pages (auth + private app shell)
-src/components/          # Shared UI
-src/lib/auth/            # Auth.js, session/ownership helpers
-src/lib/ai/              # Report generation facade
-src/lib/storage/         # Local resume file storage
-src/server/actions/      # Server Actions
-prisma/                  # Schema, migrations, seed
-specs/                   # Spec Kit features
-_bmad-output/            # Brief, PRD, architecture, stories
-.specify/                # Constitution + Spec Kit tooling
-```
+| Doc | Path |
+|-----|------|
+| PRD | [`_bmad-output/planning-artifacts/prds/`](_bmad-output/planning-artifacts/prds/) |
+| Brief | [`_bmad-output/planning-artifacts/briefs/`](_bmad-output/planning-artifacts/briefs/) |
+| Architecture | [`_bmad-output/planning-artifacts/architecture/`](_bmad-output/planning-artifacts/architecture/) |
+| Spec Kit auth feature | [`specs/001-user-auth/`](specs/001-user-auth/) |
 
-## Governance & planning
+---
 
-- Constitution: [`.specify/memory/constitution.md`](.specify/memory/constitution.md)
-- Agent rules: [`_bmad-output/project-context.md`](_bmad-output/project-context.md)
-- PRD: [`_bmad-output/planning-artifacts/prds/`](_bmad-output/planning-artifacts/prds/)
-- Architecture spine: [`_bmad-output/planning-artifacts/architecture/`](_bmad-output/planning-artifacts/architecture/)
+## Vision
 
-## Deploy (e.g. Vercel)
-
-Yes, this can run on Vercel with:
-
-1. Hosted Postgres (`DATABASE_URL`)
-2. Same Auth/env vars (`AUTH_URL` = your production URL)
-3. Google redirect URI updated for production
-4. Resume storage moved off local `/uploads` (e.g. Vercel Blob / S3) for durable files
-
-Local disk under `uploads/` works on your machine only.
-
-## License
-
-Private project (`package.json` → `"private": true`).
+Build a preparation product where practice is **role-aware**, **resume-grounded**, and **measurable**—and where the engineering process itself stays as intentional as the product, through BMAD planning and Spec Kit specification.
