@@ -1,4 +1,4 @@
-// Auth.js models — specs/001-user-auth/data-model.md
+// Auth.js + MVP domain models (architecture spine ERD)
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,16 +8,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum InterviewStatus {
+  in_progress
+  completed
+  ended_early
+  completed_pending_report
+  report_failed
+  abandoned
+}
+
+enum MixPreset {
+  behavioral_heavy
+  balanced
+  technical_heavy
+}
+
 model User {
-  id            String    @id @default(cuid())
+  id            String      @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?     @unique
   emailVerified DateTime?
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  defaultRoleId String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
   accounts      Account[]
   sessions      Session[]
+  resume        Resume?
+  interviews    Interview[]
+  defaultRole   RoleCatalogEntry? @relation(fields: [defaultRoleId], references: [id])
 }
 
 model Account {
@@ -53,4 +72,75 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model RoleCatalogEntry {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  title       String
+  description String
+  users       User[]
+  interviews  Interview[]
+}
+
+model Resume {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  fileName     String?
+  storageKey   String?
+  mimeType     String?
+  summary      String   @db.Text @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Interview {
+  id            String          @id @default(cuid())
+  userId        String
+  roleId        String
+  status        InterviewStatus @default(in_progress)
+  durationMin   Int
+  questionCount Int
+  mixPreset     MixPreset
+  startedAt     DateTime        @default(now())
+  completedAt   DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role          RoleCatalogEntry @relation(fields: [roleId], references: [id])
+  turns         InterviewTurn[]
+  report        InterviewReport?
+
+  @@index([userId, startedAt])
+}
+
+model InterviewTurn {
+  id           String   @id @default(cuid())
+  interviewId  String
+  turnIndex    Int
+  questionText String   @db.Text
+  answerText   String?  @db.Text
+  answeredAt   DateTime?
+  createdAt    DateTime @default(now())
+  interview    Interview @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+
+  @@unique([interviewId, turnIndex])
+}
+
+model InterviewReport {
+  id              String   @id @default(cuid())
+  interviewId     String   @unique
+  clarity         Int
+  structure       Int
+  technicalDepth  Int
+  relevance       Int
+  overallSummary  String   @db.Text
+  strengths       String   @db.Text
+  improvements    String   @db.Text
+  promptId        String
+  promptVersion   String
+  modelId         String
+  createdAt       DateTime @default(now())
+  interview       Interview @relation(fields: [interviewId], references: [id], onDelete: Cascade)
 }

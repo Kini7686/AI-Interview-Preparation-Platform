@@ -6,6 +6,7 @@
 const PRIVATE_PREFIXES = [
   "/dashboard",
   "/profile",
+  "/resume",
   "/history",
   "/interview",
 ] as const;

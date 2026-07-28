@@ -3,7 +3,8 @@
 # Project focus: BMAD Method + GitHub Spec Kit + the Next.js app.
 # KEEP TRACKED (do not ignore):
 #   _bmad/  _bmad-output/  .agents/  .specify/  .cursor/skills/
-#   src/  public/  package*.json  configs  README / AGENTS / CLAUDE
+#   src/  public/  package*.json  prisma/schema+migrations  configs
+#   README / AGENTS / CLAUDE / .env.example
 #
 # IGNORE: secrets, builds, dependencies, local caches, uploads, OS junk.
 # If a sensitive or generated local artifact appears, add a rule here.
@@ -22,6 +23,7 @@
 /.next/
 /out/
 /build
+/dist
 .turbo
 .swc/
 
@@ -35,8 +37,8 @@
 secrets/
 .secrets/
 auth.json
-.npmrc
-# Keep .npmrc only if it has no tokens; if it has tokens, ignore it.
+# Ignore local npmrc if it contains tokens (prefer project .npmrc without secrets)
+.npmrc.local
 
 # --- Logs & debug ---
 npm-debug.log*
@@ -47,12 +49,14 @@ pnpm-debug.log*
 
 # --- Testing & coverage ---
 /coverage
+/coverage-e2e
 .nyc_output
 /test-results/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
 /e2e-results/
+/e2e/.auth/
 vitest.config.ts.timestamp-*
 
 # --- TypeScript ---
@@ -72,10 +76,13 @@ prisma/dev.db*
 *.db-journal
 
 # --- Uploads & local object-storage mirrors (user resumes, etc.) ---
-/uploads/
+/uploads/**
+!/uploads/.gitkeep
 /tmp/uploads/
 /.data/
 /storage/local/
+*.pdf.upload
+*.docx.upload
 
 # --- Auth / session local artifacts ---
 .auth/
@@ -111,6 +118,7 @@ Desktop.ini
 # Do NOT ignore .cursor/skills or .specify — Spec Kit tooling
 .cursor-tmp/
 .cursor/*.log
+.cursor/mcp.json
 
 # --- Certificates & keys ---
 *.pem
@@ -131,3 +139,4 @@ temp/
 *.local
 *.bak
 *.orig
+*.tmp

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { AppShell } from "@/components/app-shell";
 
 export default async function AppLayout({
   children,
@@ -11,5 +12,5 @@ export default async function AppLayout({
     redirect("/sign-in?callbackUrl=%2Fdashboard");
   }
 
-  return <>{children}</>;
+  return <AppShell>{children}</AppShell>;
 }
