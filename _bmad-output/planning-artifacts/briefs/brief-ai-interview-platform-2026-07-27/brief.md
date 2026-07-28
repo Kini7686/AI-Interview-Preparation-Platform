@@ -1,6 +1,6 @@
 ---
 title: AI Interview Preparation Platform
-status: draft
+status: approved
 created: 2026-07-27
 updated: 2026-07-27
 ---
