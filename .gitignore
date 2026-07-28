@@ -1,6 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/
+# Keep this file current: if a generated/local/secret artifact appears in the
+# working tree and must not ship to GitHub, add a rule here immediately.
 
-# --- Dependencies (reinstall with npm install) ---
+# --- Dependencies ---
 /node_modules
 /.pnp
 .pnp.*
@@ -15,11 +17,13 @@
 /out/
 /build
 .turbo
+.swc/
 
 # --- Environment & secrets (never commit) ---
 .env
 .env.*
 !.env.example
+!.env*.example
 
 # --- Logs & debug ---
 npm-debug.log*
@@ -35,6 +39,8 @@ pnpm-debug.log*
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+/e2e-results/
+vitest.config.ts.timestamp-*
 
 # --- TypeScript ---
 *.tsbuildinfo
@@ -43,9 +49,28 @@ next-env.d.ts
 # --- Lint / format caches ---
 .eslintcache
 .prettiercache
+.stylelintcache
+
+# --- Prisma / database local ---
+prisma/*.db
+prisma/*.db-journal
+prisma/dev.db*
+*.db
+*.db-journal
+
+# --- Uploads & local object-storage mirrors ---
+/uploads/
+/tmp/uploads/
+/.data/
+/storage/local/
+
+# --- Auth / session local artifacts ---
+.auth/
+*.session.json
 
 # --- Deployment ---
 .vercel
+.netlify
 
 # --- OS files ---
 .DS_Store
@@ -67,6 +92,9 @@ Desktop.ini
 .classpath
 .settings/
 *.code-workspace
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
 
 # --- Certificates & keys ---
 *.pem
@@ -77,8 +105,11 @@ credentials.json
 *-credentials.json
 service-account*.json
 
-# --- Misc local / temp ---
+# --- Misc local / temp / agent noise ---
 .cache/
 tmp/
 temp/
 *.local
+*.bak
+*.orig
+.cursor-tmp/
