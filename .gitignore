@@ -1,6 +1,6 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# See https://help.github.com/articles/ignoring-files/
 
-# dependencies
+# --- Dependencies (reinstall with npm install) ---
 /node_modules
 /.pnp
 .pnp.*
@@ -10,32 +10,75 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
-/coverage
-
-# next.js
+# --- Next.js build & cache ---
 /.next/
 /out/
-
-# production
 /build
+.turbo
 
-# misc
-.DS_Store
-*.pem
+# --- Environment & secrets (never commit) ---
+.env
+.env.*
+!.env.example
 
-# debug
+# --- Logs & debug ---
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
+pnpm-debug.log*
+*.log
 
-# env files (can opt-in for committing if needed)
-.env*
+# --- Testing & coverage ---
+/coverage
+.nyc_output
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
 
-# vercel
-.vercel
-
-# typescript
+# --- TypeScript ---
 *.tsbuildinfo
 next-env.d.ts
+
+# --- Lint / format caches ---
+.eslintcache
+.prettiercache
+
+# --- Deployment ---
+.vercel
+
+# --- OS files ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# --- Editors & local IDE state ---
+.idea/
+*.iml
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.code-workspace
+
+# --- Certificates & keys ---
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+*-credentials.json
+service-account*.json
+
+# --- Misc local / temp ---
+.cache/
+tmp/
+temp/
+*.local
