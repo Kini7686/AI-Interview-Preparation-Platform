@@ -37,6 +37,11 @@
 secrets/
 .secrets/
 auth.json
+# Google Cloud OAuth client downloads (Client ID/secret JSON)
+client_secret*.json
+client_secret_*.json
+*-oauth-client.json
+oauth-client*.json
 # Ignore local npmrc if it contains tokens (prefer project .npmrc without secrets)
 .npmrc.local
 
@@ -91,6 +96,12 @@ prisma/dev.db*
 # --- Deployment ---
 .vercel
 .netlify
+.vercel/*.log
+# Pulled env dumps from hosting CLIs
+.env.vercel
+.env.production.local
+.env.development.local
+.env.test.local
 
 # --- OS files ---
 .DS_Store
