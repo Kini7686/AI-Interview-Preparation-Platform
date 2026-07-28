@@ -3,3 +3,8 @@
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
+
+## Project governance
+
+- Spec Kit constitution: `.specify/memory/constitution.md` (non-negotiable delivery principles)
+- BMAD / agent implementation rules: `_bmad-output/project-context.md`

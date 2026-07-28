@@ -39,8 +39,25 @@
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+*Source: `.specify/memory/constitution.md` (v1.0.0+)*
 
-[Gates determined based on constitution file]
+A plan MUST NOT proceed while any gate below is unmet unless justified in
+**Complexity Tracking**.
+
+- **I. Type Safety**: TypeScript strict; no unjustified `any`; Zod planned for
+  all external and AI inputs/outputs
+- **II. Security & Privacy**: Authenticated user scoping for private data; no
+  resume/answer bodies in logs; upload type/size limits; secrets server-side only
+- **III. Test-First**: Tests mapped to acceptance criteria; E2E for critical
+  flows; regression tests for bug-fix work
+- **IV. AI Reliability**: Structured AI schemas + Zod; retry/reject invalid
+  output; versioned prompts; scores include written rationale (if AI in scope)
+- **V. Accessibility**: Keyboard, semantic HTML, labels/focus, WCAG-conscious
+  contrast for UI work
+- **VI. Simplicity**: Prefer Next.js-native capabilities; new dependencies
+  justified in Complexity Tracking
+- **VII. Traceability**: Tasks/requirements/ACs cross-linked; spec/plan/tasks
+  remain aligned with this plan
 
 ## Project Structure
 

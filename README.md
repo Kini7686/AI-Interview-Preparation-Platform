@@ -1,4 +1,10 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is a [Next.js](https://nextjs.org) project for the **AI Interview Preparation Platform**, using **BMAD Method** and **GitHub Spec Kit** for planning and delivery.
+
+## Governance
+
+Non-negotiable engineering principles live in [`.specify/memory/constitution.md`](.specify/memory/constitution.md) (type safety, security/privacy, test-first, AI reliability, accessibility, simplicity, traceability).
+
+Agent implementation rules: [`_bmad-output/project-context.md`](_bmad-output/project-context.md).
 
 ## Getting Started
 

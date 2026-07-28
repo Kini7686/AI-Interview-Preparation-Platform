@@ -83,6 +83,10 @@
 <!--
   ACTION REQUIRED: The content in this section represents placeholders.
   Fill them out with the right functional requirements.
+  Constitution (`.specify/memory/constitution.md`): every FR/NFR and acceptance
+  scenario MUST remain traceable through plan → tasks → tests → code (VII).
+  Private data MUST imply authenticated user scoping (II). AI features MUST
+  define structured output and failure handling (IV).
 -->
 
 ### Functional Requirements
@@ -116,6 +120,16 @@
 - **SC-002**: [Measurable metric, e.g., "System handles 1000 concurrent users without degradation"]
 - **SC-003**: [User satisfaction metric, e.g., "90% of users successfully complete primary task on first attempt"]
 - **SC-004**: [Business metric, e.g., "Reduce support tickets related to [X] by 50%"]
+
+### Constitution Constraints *(include when feature touches gated concerns)*
+
+- [ ] Type safety / Zod boundaries (I)
+- [ ] Authz scoping & no sensitive logging (II)
+- [ ] Tests for ACs + E2E if critical path (III)
+- [ ] AI schema, retry/reject, prompt version, score rationale (IV) — if AI in scope
+- [ ] Accessibility for UI (V)
+- [ ] No unjustified new dependencies (VI)
+- [ ] Requirement ↔ AC ↔ task mapping (VII)
 
 ## Assumptions
 
