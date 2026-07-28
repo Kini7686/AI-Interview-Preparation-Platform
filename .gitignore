@@ -1,6 +1,12 @@
 # See https://help.github.com/articles/ignoring-files/
-# Keep this file current: if a generated/local/secret artifact appears in the
-# working tree and must not ship to GitHub, add a rule here immediately.
+#
+# Project focus: BMAD Method + GitHub Spec Kit + the Next.js app.
+# KEEP TRACKED (do not ignore):
+#   _bmad/  _bmad-output/  .agents/  .specify/  .cursor/skills/
+#   src/  public/  package*.json  configs  README / AGENTS / CLAUDE
+#
+# IGNORE: secrets, builds, dependencies, local caches, uploads, OS junk.
+# If a sensitive or generated local artifact appears, add a rule here.
 
 # --- Dependencies ---
 /node_modules
@@ -24,6 +30,13 @@
 .env.*
 !.env.example
 !.env*.example
+*.secret
+*.secrets
+secrets/
+.secrets/
+auth.json
+.npmrc
+# Keep .npmrc only if it has no tokens; if it has tokens, ignore it.
 
 # --- Logs & debug ---
 npm-debug.log*
@@ -58,7 +71,7 @@ prisma/dev.db*
 *.db
 *.db-journal
 
-# --- Uploads & local object-storage mirrors ---
+# --- Uploads & local object-storage mirrors (user resumes, etc.) ---
 /uploads/
 /tmp/uploads/
 /.data/
@@ -82,7 +95,7 @@ ehthumbs.db
 Thumbs.db
 Desktop.ini
 
-# --- Editors & local IDE state ---
+# --- Editors & local IDE state (keep Spec Kit / Cursor skills tracked) ---
 .idea/
 *.iml
 *.swp
@@ -95,6 +108,9 @@ Desktop.ini
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json.example
+# Do NOT ignore .cursor/skills or .specify — Spec Kit tooling
+.cursor-tmp/
+.cursor/*.log
 
 # --- Certificates & keys ---
 *.pem
@@ -104,12 +120,14 @@ Desktop.ini
 credentials.json
 *-credentials.json
 service-account*.json
+*-service-account.json
+.aws/
+.gcloud/
 
-# --- Misc local / temp / agent noise ---
+# --- Misc local / temp ---
 .cache/
 tmp/
 temp/
 *.local
 *.bak
 *.orig
-.cursor-tmp/
