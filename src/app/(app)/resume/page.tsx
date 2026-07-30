@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { MIN_RESUME_SUMMARY_CHARS } from "@/lib/domain/interview";
 import { saveResumeSummary, uploadResume } from "@/server/actions/resume";
 import { ActionForm } from "@/components/action-form";
+import { PageHeader, Section } from "@/components/ui";
 
 export default async function ResumePage() {
   const session = await auth();
@@ -13,45 +14,56 @@ export default async function ResumePage() {
     where: { userId: session.user.id },
   });
   const length = resume?.summary.trim().length ?? 0;
+  const ready = length >= MIN_RESUME_SUMMARY_CHARS;
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 px-6 py-12">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-semibold tracking-tight">Resume</h1>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Upload a PDF/DOCX and edit the summary used to ground interview questions
-          (minimum {MIN_RESUME_SUMMARY_CHARS} characters).
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="Interview grounding"
+        title="Resume"
+        description={`Upload a PDF or DOCX and refine the summary that questions are generated from. At least ${MIN_RESUME_SUMMARY_CHARS} characters are required.`}
+        actions={
+          <span className={`badge ${ready ? "badge-success" : "badge-warning"}`}>
+            {ready ? "Ready" : "Needs more detail"}
+          </span>
+        }
+      />
 
-      <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold">Upload file</h2>
-        <ActionForm action={uploadResume} className="flex flex-col gap-4">
+      <Section
+        title="Upload file"
+        description="Text is extracted into the summary field below."
+      >
+        <ActionForm action={uploadResume} className="card flex flex-col gap-4 p-6">
           <input
             type="file"
             name="file"
             accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
             required
-            className="text-sm"
+            aria-label="Resume file"
+            className="file-input"
           />
           {resume?.fileName ? (
-            <p className="text-sm text-zinc-500">Current file: {resume.fileName}</p>
+            <p className="hint">Current file: {resume.fileName}</p>
           ) : null}
-          <button
-            type="submit"
-            className="inline-flex h-11 w-fit items-center justify-center rounded-md border border-zinc-300 px-4 text-sm font-medium dark:border-zinc-700"
-          >
+          <button type="submit" className="btn btn-secondary w-fit">
             Upload resume
           </button>
         </ActionForm>
-      </section>
+      </Section>
 
-      <section className="flex flex-col gap-4">
-        <div className="flex items-end justify-between gap-4">
-          <h2 className="text-lg font-semibold">Resume summary</h2>
-          <p className="text-xs text-zinc-500">{length} / {MIN_RESUME_SUMMARY_CHARS}+ chars</p>
-        </div>
-        <ActionForm action={saveResumeSummary} className="flex flex-col gap-4">
+      <Section
+        title="Resume summary"
+        description="Projects, skills, impact metrics, and stories worth asking about."
+        action={
+          <span className={`badge ${ready ? "badge-success" : "badge-neutral"}`}>
+            {length} / {MIN_RESUME_SUMMARY_CHARS}+ characters
+          </span>
+        }
+      >
+        <ActionForm
+          action={saveResumeSummary}
+          className="card flex flex-col gap-4 p-6"
+        >
           <label htmlFor="summary" className="sr-only">
             Resume summary
           </label>
@@ -61,17 +73,14 @@ export default async function ResumePage() {
             rows={14}
             required
             defaultValue={resume?.summary ?? ""}
-            className="rounded-md border border-zinc-300 bg-white p-3 text-sm leading-6 outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-900 dark:border-zinc-700 dark:bg-zinc-950"
+            className="textarea"
             placeholder="Projects, skills, impact metrics, and stories you want interview questions to reference…"
           />
-          <button
-            type="submit"
-            className="inline-flex h-11 w-fit items-center justify-center rounded-md bg-zinc-900 px-4 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
-          >
+          <button type="submit" className="btn btn-primary w-fit">
             Save summary
           </button>
         </ActionForm>
-      </section>
+      </Section>
     </main>
   );
 }

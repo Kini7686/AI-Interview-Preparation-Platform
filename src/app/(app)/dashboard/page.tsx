@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db/prisma";
 import { MIN_RESUME_SUMMARY_CHARS } from "@/lib/domain/interview";
 import { redirect } from "next/navigation";
+import { EmptyState, PageHeader, Section, StatusBadge } from "@/components/ui";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -30,21 +31,47 @@ export default async function DashboardPage() {
   const resumeReady =
     (resume?.summary.trim().length ?? 0) >= MIN_RESUME_SUMMARY_CHARS;
   const profileReady = Boolean(user?.name?.trim() && user?.defaultRoleId);
+  const readySteps = [profileReady, resumeReady].filter(Boolean).length;
 
   return (
-    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-10 px-6 py-12">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-semibold tracking-tight">Dashboard</h1>
-        <p className="text-zinc-600 dark:text-zinc-400">
-          Signed in as <span className="font-medium text-zinc-900 dark:text-zinc-100">{identity}</span>
-          {user?.defaultRole ? (
-            <> · default role {user.defaultRole.title}</>
-          ) : null}
-          .
-        </p>
+    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10 px-6 py-12">
+      <PageHeader
+        eyebrow="Dashboard"
+        title={`Welcome back, ${identity.split(" ")[0]}`}
+        description={
+          user?.defaultRole
+            ? `Your default target role is ${user.defaultRole.title}. Everything below reflects your current readiness.`
+            : "Set up your profile and resume to unlock resume-grounded mock interviews."
+        }
+        actions={
+          <Link
+            href="/interview"
+            className="btn btn-primary"
+            aria-disabled={!(profileReady && resumeReady) || undefined}
+          >
+            Start interview
+          </Link>
+        }
+      />
+
+      <div className="card flex flex-col gap-3 p-5">
+        <div className="flex items-center justify-between gap-4">
+          <p className="text-sm font-semibold">Setup progress</p>
+          <p className="hint">{readySteps} of 2 complete</p>
+        </div>
+        <div
+          className="progress"
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={2}
+          aria-valuenow={readySteps}
+          aria-label="Setup progress"
+        >
+          <span style={{ width: `${(readySteps / 2) * 100}%` }} />
+        </div>
       </div>
 
-      <section className="grid gap-4 sm:grid-cols-3">
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatusCard
           title="Profile"
           ready={profileReady}
@@ -52,7 +79,7 @@ export default async function DashboardPage() {
           cta={profileReady ? "Edit profile" : "Complete profile"}
           detail={
             profileReady
-              ? "Name and default role set."
+              ? "Name and default role are set."
               : "Add your display name and target role."
           }
         />
@@ -63,8 +90,8 @@ export default async function DashboardPage() {
           cta={resumeReady ? "Update resume" : "Add resume summary"}
           detail={
             resumeReady
-              ? "Summary ready for interview grounding."
-              : `Need at least ${MIN_RESUME_SUMMARY_CHARS} characters.`
+              ? "Summary is ready for interview grounding."
+              : `Needs at least ${MIN_RESUME_SUMMARY_CHARS} characters.`
           }
         />
         <StatusCard
@@ -72,44 +99,55 @@ export default async function DashboardPage() {
           ready={profileReady && resumeReady}
           href="/interview"
           cta="Start practice"
-          detail="Configure duration, questions, and mix."
+          detail="Configure duration, question count, and mix."
         />
       </section>
 
-      <section className="flex flex-col gap-4">
-        <div className="flex items-center justify-between gap-4">
-          <h2 className="text-lg font-semibold">Recent interviews</h2>
-          <Link href="/history" className="text-sm text-zinc-600 underline-offset-4 hover:underline dark:text-zinc-400">
-            View history
+      <Section
+        title="Recent interviews"
+        description="Your three most recent practice sessions."
+        action={
+          <Link href="/history" className="link text-sm">
+            View all
           </Link>
-        </div>
+        }
+      >
         {recent.length === 0 ? (
-          <p className="text-sm text-zinc-500">No interviews yet. Start your first mock when profile and resume are ready.</p>
+          <EmptyState
+            title="No interviews yet"
+            description="Once your profile and resume are ready, start your first mock interview to see results here."
+            actionHref="/interview"
+            actionLabel="Start your first interview"
+          />
         ) : (
-          <ul className="divide-y divide-zinc-200 border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+          <ul className="card list">
             {recent.map((item) => (
-              <li key={item.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm">
-                <div>
-                  <p className="font-medium">{item.role.title}</p>
-                  <p className="text-zinc-500">
-                    {item.status.replaceAll("_", " ")} · {item.startedAt.toLocaleString()}
-                  </p>
+              <li
+                key={item.id}
+                className="flex flex-wrap items-center justify-between gap-3 px-5 py-4"
+              >
+                <div className="flex flex-col gap-1">
+                  <p className="text-sm font-semibold">{item.role.title}</p>
+                  <p className="hint">{item.startedAt.toLocaleString()}</p>
                 </div>
-                <Link
-                  href={
-                    item.status === "in_progress"
-                      ? `/interview/${item.id}`
-                      : `/interview/${item.id}/report`
-                  }
-                  className="underline-offset-4 hover:underline"
-                >
-                  Open
-                </Link>
+                <div className="flex items-center gap-3">
+                  <StatusBadge status={item.status} />
+                  <Link
+                    href={
+                      item.status === "in_progress"
+                        ? `/interview/${item.id}`
+                        : `/interview/${item.id}/report`
+                    }
+                    className="btn btn-secondary btn-sm"
+                  >
+                    Open
+                  </Link>
+                </div>
               </li>
             ))}
           </ul>
         )}
-      </section>
+      </Section>
     </main>
   );
 }
@@ -128,24 +166,15 @@ function StatusCard({
   detail: string;
 }) {
   return (
-    <div className="flex flex-col gap-3 border border-zinc-200 p-5 dark:border-zinc-800">
+    <div className="card card-hover flex flex-col gap-3 p-6">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="font-semibold">{title}</h2>
-        <span
-          className={
-            ready
-              ? "text-xs font-medium text-emerald-700 dark:text-emerald-300"
-              : "text-xs font-medium text-amber-700 dark:text-amber-300"
-          }
-        >
-          {ready ? "Ready" : "Needed"}
+        <h2 className="text-base font-semibold">{title}</h2>
+        <span className={`badge ${ready ? "badge-success" : "badge-warning"}`}>
+          {ready ? "Ready" : "Action needed"}
         </span>
       </div>
-      <p className="flex-1 text-sm text-zinc-600 dark:text-zinc-400">{detail}</p>
-      <Link
-        href={href}
-        className="inline-flex h-10 items-center justify-center rounded-md bg-zinc-900 px-3 text-sm font-medium text-white outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-900 dark:bg-zinc-100 dark:text-zinc-900"
-      >
+      <p className="flex-1 text-sm leading-6 muted">{detail}</p>
+      <Link href={href} className="btn btn-secondary btn-sm w-fit">
         {cta}
       </Link>
     </div>

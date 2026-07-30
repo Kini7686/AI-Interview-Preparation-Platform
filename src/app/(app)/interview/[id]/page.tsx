@@ -35,33 +35,54 @@ export default async function InterviewSessionPage({ params }: PageProps) {
   const current =
     interview.turns.find((t) => !t.answerText) ?? interview.turns.at(-1);
   const answered = interview.turns.filter((t) => t.answerText).length;
+  const position = Math.min(answered + 1, interview.questionCount);
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-6 py-12">
-      <div className="flex flex-col gap-2">
-        <p className="text-sm text-zinc-500">
-          {interview.role.title} · {interview.durationMin} min ·{" "}
-          {MIX_PRESET_LABELS[interview.mixPreset]}
-        </p>
+      <header className="flex flex-col gap-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="badge badge-brand">{interview.role.title}</span>
+          <span className="badge badge-neutral">{interview.durationMin} min</span>
+          <span className="badge badge-neutral">
+            {MIX_PRESET_LABELS[interview.mixPreset]}
+          </span>
+        </div>
         <h1 className="text-3xl font-semibold tracking-tight">Mock interview</h1>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Question {Math.min(answered + 1, interview.questionCount)} of{" "}
-          {interview.questionCount}
-        </p>
-      </div>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between gap-3">
+            <p className="hint">
+              Question {position} of {interview.questionCount}
+            </p>
+            <p className="hint">{answered} answered</p>
+          </div>
+          <div
+            className="progress"
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={interview.questionCount}
+            aria-valuenow={answered}
+            aria-label="Interview progress"
+          >
+            <span style={{ width: `${(answered / interview.questionCount) * 100}%` }} />
+          </div>
+        </div>
+      </header>
 
       {current ? (
-        <section className="flex flex-col gap-4">
-          <div className="border border-zinc-200 p-5 dark:border-zinc-800">
-            <h2 className="text-sm font-medium text-zinc-500">Question</h2>
-            <p className="mt-2 text-lg leading-8">{current.questionText}</p>
+        <section className="flex flex-col gap-5">
+          <div className="card flex flex-col gap-2 p-6">
+            <p className="eyebrow">Question {position}</p>
+            <p className="text-lg leading-8">{current.questionText}</p>
           </div>
 
           {!current.answerText ? (
-            <ActionForm action={submitAnswer} className="flex flex-col gap-4">
+            <ActionForm
+              action={submitAnswer}
+              className="card flex flex-col gap-4 p-6"
+            >
               <input type="hidden" name="interviewId" value={interview.id} />
               <input type="hidden" name="turnId" value={current.id} />
-              <label htmlFor="answerText" className="text-sm font-medium">
+              <label htmlFor="answerText" className="label">
                 Your answer
               </label>
               <textarea
@@ -69,13 +90,10 @@ export default async function InterviewSessionPage({ params }: PageProps) {
                 name="answerText"
                 rows={10}
                 required
-                className="rounded-md border border-zinc-300 bg-white p-3 text-sm leading-6 outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-900 dark:border-zinc-700 dark:bg-zinc-950"
-                placeholder="Write a structured answer…"
+                className="textarea"
+                placeholder="Structure it: situation, what you did, the outcome, and what you learned…"
               />
-              <button
-                type="submit"
-                className="inline-flex h-11 w-fit items-center justify-center rounded-md bg-zinc-900 px-4 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
-              >
+              <button type="submit" className="btn btn-primary w-fit">
                 Submit answer
               </button>
             </ActionForm>
@@ -83,11 +101,11 @@ export default async function InterviewSessionPage({ params }: PageProps) {
         </section>
       ) : null}
 
-      <form action={endInterviewEarly.bind(null, interview.id)}>
-        <button
-          type="submit"
-          className="text-sm text-zinc-500 underline-offset-4 hover:underline"
-        >
+      <form
+        action={endInterviewEarly.bind(null, interview.id)}
+        className="flex justify-center"
+      >
+        <button type="submit" className="btn btn-ghost">
           End interview early and generate report
         </button>
       </form>

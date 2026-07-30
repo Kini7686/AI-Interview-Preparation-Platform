@@ -9,10 +9,7 @@ export function ActionForm({
   children,
   className,
 }: {
-  action: (
-    prev: Result | null,
-    formData: FormData,
-  ) => Promise<Result | void>;
+  action: (prev: Result | null, formData: FormData) => Promise<Result | void>;
   children: React.ReactNode;
   className?: string;
 }) {
@@ -27,16 +24,20 @@ export function ActionForm({
   return (
     <form action={formAction} className={className}>
       {state?.ok === false && (
-        <p role="alert" className="mb-3 text-sm text-red-700 dark:text-red-300">
+        <p role="alert" className="alert alert-error">
           {state.message}
         </p>
       )}
       {state?.ok === true && state.message && (
-        <p role="status" className="mb-3 text-sm text-emerald-700 dark:text-emerald-300">
+        <p role="status" className="alert alert-success">
           {state.message}
         </p>
       )}
-      <fieldset disabled={pending} className="contents">
+      <fieldset
+        disabled={pending}
+        className="contents"
+        aria-busy={pending || undefined}
+      >
         {children}
       </fieldset>
     </form>

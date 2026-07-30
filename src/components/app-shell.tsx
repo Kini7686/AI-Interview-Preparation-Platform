@@ -1,59 +1,72 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { signOutAction } from "@/server/actions/auth";
+import { NavLinks } from "@/components/nav-links";
 
-const NAV = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/profile", label: "Profile" },
-  { href: "/resume", label: "Resume" },
-  { href: "/interview", label: "Interview" },
-  { href: "/history", label: "History" },
-] as const;
+function initials(label: string): string {
+  const parts = label.replace(/@.*/, "").split(/[\s._-]+/).filter(Boolean);
+  const letters = parts.slice(0, 2).map((p) => p[0] ?? "");
+  return (letters.join("") || label[0] || "?").toUpperCase();
+}
 
 export async function AppShell({ children }: { children: React.ReactNode }) {
   const session = await auth();
   const label =
-    session?.user?.name?.trim() ||
-    session?.user?.email?.trim() ||
-    "Account";
+    session?.user?.name?.trim() || session?.user?.email?.trim() || "Account";
 
   return (
     <div className="flex min-h-full flex-col">
-      <header className="border-b border-zinc-200 bg-white/80 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80">
-        <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-4">
-          <div className="flex flex-wrap items-center gap-6">
+      <header
+        className="sticky top-0 z-20 border-b backdrop-blur"
+        style={{
+          borderColor: "var(--border)",
+          background: "color-mix(in oklab, var(--surface) 82%, transparent)",
+        }}
+      >
+        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-3">
+          <div className="flex flex-wrap items-center gap-5">
             <Link
               href="/dashboard"
-              className="text-sm font-semibold tracking-tight text-zinc-900 outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-900 dark:text-zinc-50"
+              className="flex items-center gap-2 text-sm font-semibold tracking-tight"
             >
-              AI Interview Platform
-            </Link>
-            <nav aria-label="Main" className="flex flex-wrap gap-1">
-              {NAV.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="rounded-md px-3 py-2 text-sm text-zinc-600 outline-offset-2 hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="hidden text-sm text-zinc-500 sm:inline">{label}</span>
-            <form action={signOutAction}>
-              <button
-                type="submit"
-                className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-900 dark:border-zinc-700"
+              <span
+                aria-hidden="true"
+                className="flex h-7 w-7 items-center justify-center rounded-lg text-xs font-bold"
+                style={{ background: "var(--brand)", color: "var(--brand-contrast)" }}
               >
+                AI
+              </span>
+              Interview Platform
+            </Link>
+            <NavLinks />
+          </div>
+
+          <div className="flex items-center gap-3">
+            <span className="hidden items-center gap-2 sm:flex">
+              <span className="avatar" aria-hidden="true">
+                {initials(label)}
+              </span>
+              <span className="text-sm font-medium">{label}</span>
+            </span>
+            <form action={signOutAction}>
+              <button type="submit" className="btn btn-secondary btn-sm">
                 Sign out
               </button>
             </form>
           </div>
         </div>
       </header>
+
       <div className="flex flex-1 flex-col">{children}</div>
+
+      <footer
+        className="border-t px-6 py-6"
+        style={{ borderColor: "var(--border)" }}
+      >
+        <p className="mx-auto w-full max-w-6xl text-xs muted">
+          AI Interview Platform — structured practice, measurable feedback.
+        </p>
+      </footer>
     </div>
   );
 }

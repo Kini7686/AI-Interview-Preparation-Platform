@@ -2,6 +2,7 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db/prisma";
 import { redirect } from "next/navigation";
+import { EmptyState, PageHeader, StatusBadge } from "@/components/ui";
 
 export default async function HistoryPage() {
   const session = await auth();
@@ -15,23 +16,26 @@ export default async function HistoryPage() {
 
   return (
     <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-6 py-12">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-semibold tracking-tight">History</h1>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Past mock interviews and reports for your account.
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="Your activity"
+        title="History"
+        description="Every mock interview on your account, newest first."
+        actions={
+          <Link href="/interview" className="btn btn-primary">
+            New interview
+          </Link>
+        }
+      />
 
       {interviews.length === 0 ? (
-        <p className="text-sm text-zinc-500">
-          No interviews yet.{" "}
-          <Link href="/interview" className="underline underline-offset-4">
-            Start one
-          </Link>
-          .
-        </p>
+        <EmptyState
+          title="Nothing here yet"
+          description="Completed and in-progress interviews will show up here with their scores."
+          actionHref="/interview"
+          actionLabel="Start an interview"
+        />
       ) : (
-        <ul className="divide-y divide-zinc-200 border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+        <ul className="flex flex-col gap-3">
           {interviews.map((item) => {
             const href =
               item.status === "in_progress"
@@ -45,22 +49,27 @@ export default async function HistoryPage() {
                     item.report.relevance) /
                   4
                 ).toFixed(1)
-              : "—";
+              : null;
             return (
               <li
                 key={item.id}
-                className="flex flex-wrap items-center justify-between gap-3 px-4 py-4 text-sm"
+                className="card card-hover flex flex-wrap items-center justify-between gap-4 px-5 py-4"
               >
-                <div>
-                  <p className="font-medium">{item.role.title}</p>
-                  <p className="text-zinc-500">
-                    {item.startedAt.toLocaleString()} ·{" "}
-                    {item.status.replaceAll("_", " ")} · avg {avg}
+                <div className="flex flex-col gap-1.5">
+                  <p className="text-sm font-semibold">{item.role.title}</p>
+                  <p className="hint">
+                    {item.startedAt.toLocaleString()} · {item.questionCount} questions
                   </p>
                 </div>
-                <Link href={href} className="underline-offset-4 hover:underline">
-                  Open
-                </Link>
+                <div className="flex flex-wrap items-center gap-3">
+                  <StatusBadge status={item.status} />
+                  <span className="badge badge-neutral">
+                    {avg ? `avg ${avg}/5` : "no score"}
+                  </span>
+                  <Link href={href} className="btn btn-secondary btn-sm">
+                    Open
+                  </Link>
+                </div>
               </li>
             );
           })}

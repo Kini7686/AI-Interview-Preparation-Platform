@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db/prisma";
 import { redirect } from "next/navigation";
 import { updateProfile } from "@/server/actions/profile";
 import { ActionForm } from "@/components/action-form";
+import { Field, PageHeader } from "@/components/ui";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -15,47 +16,40 @@ export default async function ProfilePage() {
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-6 py-12">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-semibold tracking-tight">Profile</h1>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Set your display name and default target role for new interviews.
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="Account"
+        title="Profile"
+        description="Set your display name and the default target role used when you start a new interview."
+      />
 
-      <ActionForm action={updateProfile} className="flex flex-col gap-5">
-        <div className="flex flex-col gap-2">
-          <label htmlFor="email" className="text-sm font-medium">
-            Email
-          </label>
+      <ActionForm action={updateProfile} className="card flex flex-col gap-6 p-6">
+        <Field label="Email" htmlFor="email" hint="Managed by your sign-in provider">
           <input
             id="email"
             value={user?.email ?? session.user.email ?? ""}
             readOnly
-            className="h-11 rounded-md border border-zinc-300 bg-zinc-50 px-3 text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900"
+            className="input"
           />
-        </div>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="name" className="text-sm font-medium">
-            Display name
-          </label>
+        </Field>
+
+        <Field label="Display name" htmlFor="name">
           <input
             id="name"
             name="name"
             required
             defaultValue={user?.name ?? ""}
-            className="h-11 rounded-md border border-zinc-300 bg-white px-3 text-sm outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-900 dark:border-zinc-700 dark:bg-zinc-950"
+            className="input"
+            placeholder="Your name"
           />
-        </div>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="defaultRoleId" className="text-sm font-medium">
-            Default target role
-          </label>
+        </Field>
+
+        <Field label="Default target role" htmlFor="defaultRoleId">
           <select
             id="defaultRoleId"
             name="defaultRoleId"
             required
             defaultValue={user?.defaultRoleId ?? ""}
-            className="h-11 rounded-md border border-zinc-300 bg-white px-3 text-sm outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-900 dark:border-zinc-700 dark:bg-zinc-950"
+            className="select"
           >
             <option value="" disabled>
               Select a role
@@ -66,11 +60,9 @@ export default async function ProfilePage() {
               </option>
             ))}
           </select>
-        </div>
-        <button
-          type="submit"
-          className="inline-flex h-11 items-center justify-center rounded-md bg-zinc-900 px-4 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
-        >
+        </Field>
+
+        <button type="submit" className="btn btn-primary w-fit">
           Save profile
         </button>
       </ActionForm>

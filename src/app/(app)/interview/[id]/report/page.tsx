@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db/prisma";
 import { assertOwned } from "@/lib/auth/ownership";
+import { Section, StatusBadge } from "@/components/ui";
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -31,19 +32,37 @@ export default async function InterviewReportPage({ params }: PageProps) {
   }
 
   const report = interview.report;
+  const average = report
+    ? (report.clarity +
+        report.structure +
+        report.technicalDepth +
+        report.relevance) /
+      4
+    : null;
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-6 py-12">
-      <div className="flex flex-col gap-2">
-        <p className="text-sm text-zinc-500">{interview.role.title}</p>
-        <h1 className="text-3xl font-semibold tracking-tight">Interview report</h1>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Status: {interview.status.replaceAll("_", " ")}
-        </p>
-      </div>
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 px-6 py-12">
+      <header className="flex flex-col gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="badge badge-brand">{interview.role.title}</span>
+          <StatusBadge status={interview.status} />
+        </div>
+        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+          Interview report
+        </h1>
+        {average !== null ? (
+          <p className="text-[0.9375rem] leading-7 muted">
+            Overall score{" "}
+            <span className="font-semibold" style={{ color: "var(--foreground)" }}>
+              {average.toFixed(1)} / 5
+            </span>{" "}
+            across four rubric dimensions.
+          </p>
+        ) : null}
+      </header>
 
       {!report ? (
-        <p role="alert" className="text-sm text-amber-700 dark:text-amber-300">
+        <p role="alert" className="alert alert-warning">
           Report is not available yet
           {interview.status === "report_failed"
             ? " (generation failed). Try another interview."
@@ -51,58 +70,58 @@ export default async function InterviewReportPage({ params }: PageProps) {
         </p>
       ) : (
         <>
-          <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <section className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <Score label="Clarity" value={report.clarity} />
             <Score label="Structure" value={report.structure} />
             <Score label="Technical" value={report.technicalDepth} />
             <Score label="Relevance" value={report.relevance} />
           </section>
-          <section className="flex flex-col gap-3">
-            <h2 className="text-lg font-semibold">Summary</h2>
-            <p className="text-sm leading-7 text-zinc-700 dark:text-zinc-300">
+
+          <Section title="Summary">
+            <p className="card p-6 text-[0.9375rem] leading-7">
               {report.overallSummary}
             </p>
-          </section>
-          <section className="grid gap-6 sm:grid-cols-2">
-            <div>
-              <h2 className="text-lg font-semibold">Strengths</h2>
-              <p className="mt-2 text-sm leading-7 text-zinc-700 dark:text-zinc-300">
-                {report.strengths}
-              </p>
+          </Section>
+
+          <section className="grid gap-4 sm:grid-cols-2">
+            <div className="card flex flex-col gap-2 p-6">
+              <h2 className="text-base font-semibold" style={{ color: "var(--success)" }}>
+                Strengths
+              </h2>
+              <p className="text-sm leading-7">{report.strengths}</p>
             </div>
-            <div>
-              <h2 className="text-lg font-semibold">Improvements</h2>
-              <p className="mt-2 text-sm leading-7 text-zinc-700 dark:text-zinc-300">
-                {report.improvements}
-              </p>
+            <div className="card flex flex-col gap-2 p-6">
+              <h2 className="text-base font-semibold" style={{ color: "var(--warning)" }}>
+                Improvements
+              </h2>
+              <p className="text-sm leading-7">{report.improvements}</p>
             </div>
           </section>
         </>
       )}
 
-      <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Transcript</h2>
-        <ul className="flex flex-col gap-4">
+      <Section title="Transcript" description="Every question and your answer.">
+        <ul className="flex flex-col gap-3">
           {interview.turns.map((turn) => (
-            <li
-              key={turn.id}
-              className="border border-zinc-200 p-4 text-sm dark:border-zinc-800"
-            >
-              <p className="font-medium">Q{turn.turnIndex + 1}. {turn.questionText}</p>
-              <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-                {turn.answerText ?? "(no answer)"}
+            <li key={turn.id} className="card flex flex-col gap-3 p-5">
+              <p className="text-sm font-semibold leading-6">
+                <span className="eyebrow mr-2">Q{turn.turnIndex + 1}</span>
+                {turn.questionText}
+              </p>
+              <p className="panel p-4 text-sm leading-7 whitespace-pre-wrap">
+                {turn.answerText ?? "No answer submitted."}
               </p>
             </li>
           ))}
         </ul>
-      </section>
+      </Section>
 
-      <div className="flex gap-4 text-sm">
-        <Link href="/history" className="underline-offset-4 hover:underline">
-          History
-        </Link>
-        <Link href="/interview" className="underline-offset-4 hover:underline">
+      <div className="flex flex-wrap gap-3">
+        <Link href="/interview" className="btn btn-primary">
           New interview
+        </Link>
+        <Link href="/history" className="btn btn-secondary">
+          Back to history
         </Link>
       </div>
     </main>
@@ -111,9 +130,19 @@ export default async function InterviewReportPage({ params }: PageProps) {
 
 function Score({ label, value }: { label: string; value: number }) {
   return (
-    <div className="border border-zinc-200 p-4 text-center dark:border-zinc-800">
-      <p className="text-xs uppercase tracking-wide text-zinc-500">{label}</p>
-      <p className="mt-1 text-2xl font-semibold">{value}/5</p>
+    <div className="card flex flex-col items-center gap-2 p-5 text-center">
+      <p className="eyebrow">{label}</p>
+      <p className="text-3xl font-semibold" style={{ color: "var(--brand)" }}>
+        {value}
+        <span className="text-base font-medium muted">/5</span>
+      </p>
+      <div
+        className="progress w-full"
+        role="img"
+        aria-label={`${label} score ${value} out of 5`}
+      >
+        <span style={{ width: `${(value / 5) * 100}%` }} />
+      </div>
     </div>
   );
 }
