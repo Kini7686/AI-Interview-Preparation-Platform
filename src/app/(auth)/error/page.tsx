@@ -12,7 +12,7 @@ export default async function AuthErrorPage({ searchParams }: ErrorPageProps) {
   return (
     <main className="flex flex-1 flex-col items-center justify-center px-6 py-16">
       <div className="card flex w-full max-w-md flex-col gap-5 p-8">
-        <h1 className="text-2xl font-semibold tracking-tight">Sign-in problem</h1>
+        <h1 className="page-title text-3xl">Sign-in problem</h1>
         <div role="alert" id="auth-error" className="alert alert-error">
           {message}
         </div>

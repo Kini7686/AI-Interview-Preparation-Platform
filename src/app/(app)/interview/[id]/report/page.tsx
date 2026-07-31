@@ -41,13 +41,13 @@ export default async function InterviewReportPage({ params }: PageProps) {
     : null;
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 px-6 py-12">
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 px-6 py-12 animate-rise">
       <header className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <span className="badge badge-brand">{interview.role.title}</span>
           <StatusBadge status={interview.status} />
         </div>
-        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+        <h1 className="page-title text-3xl sm:text-[2.5rem]">
           Interview report
         </h1>
         {average !== null ? (

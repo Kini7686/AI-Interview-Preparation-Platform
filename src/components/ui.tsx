@@ -15,9 +15,7 @@ export function PageHeader({
     <header className="flex flex-wrap items-end justify-between gap-4">
       <div className="flex flex-col gap-2">
         {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
-        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-          {title}
-        </h1>
+        <h1 className="page-title text-3xl sm:text-4xl">{title}</h1>
         {description ? (
           <p className="max-w-2xl text-[0.9375rem] leading-7 muted">
             {description}
@@ -66,8 +64,8 @@ export function EmptyState({
   actionLabel?: string;
 }) {
   return (
-    <div className="card flex flex-col items-center gap-3 px-6 py-12 text-center">
-      <p className="text-base font-semibold">{title}</p>
+    <div className="panel flex flex-col items-center gap-3 px-6 py-12 text-center">
+      <p className="page-title text-2xl">{title}</p>
       <p className="max-w-sm text-sm leading-6 muted">{description}</p>
       {actionHref && actionLabel ? (
         <Link href={actionHref} className="btn btn-primary btn-sm mt-2">

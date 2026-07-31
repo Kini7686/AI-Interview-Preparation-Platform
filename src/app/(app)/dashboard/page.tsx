@@ -34,7 +34,7 @@ export default async function DashboardPage() {
   const readySteps = [profileReady, resumeReady].filter(Boolean).length;
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10 px-6 py-12">
+    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10 px-6 py-12 animate-rise">
       <PageHeader
         eyebrow="Dashboard"
         title={`Welcome back, ${identity.split(" ")[0]}`}

@@ -17,26 +17,21 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-full flex-col">
       <header
-        className="sticky top-0 z-20 border-b backdrop-blur"
-        style={{
-          borderColor: "var(--border)",
-          background: "color-mix(in oklab, var(--surface) 82%, transparent)",
-        }}
+        className="sticky top-0 z-20 border-b surface-glass"
+        style={{ borderColor: "var(--border)" }}
       >
         <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-3">
           <div className="flex flex-wrap items-center gap-5">
             <Link
               href="/dashboard"
-              className="flex items-center gap-2 text-sm font-semibold tracking-tight"
+              className="flex items-center gap-2.5 text-sm font-semibold tracking-tight"
             >
-              <span
-                aria-hidden="true"
-                className="flex h-7 w-7 items-center justify-center rounded-lg text-xs font-bold"
-                style={{ background: "var(--brand)", color: "var(--brand-contrast)" }}
-              >
-                AI
+              <span className="brand-mark" aria-hidden="true">
+                A
               </span>
-              Interview Platform
+              <span className="font-display text-base tracking-tight">
+                AI Interview
+              </span>
             </Link>
             <NavLinks />
           </div>
@@ -46,7 +41,9 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
               <span className="avatar" aria-hidden="true">
                 {initials(label)}
               </span>
-              <span className="text-sm font-medium">{label}</span>
+              <span className="max-w-[10rem] truncate text-sm font-medium">
+                {label}
+              </span>
             </span>
             <form action={signOutAction}>
               <button type="submit" className="btn btn-secondary btn-sm">
@@ -57,7 +54,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <div className="flex flex-1 flex-col">{children}</div>
+      <div className="flex flex-1 flex-col animate-fade">{children}</div>
 
       <footer
         className="border-t px-6 py-6"

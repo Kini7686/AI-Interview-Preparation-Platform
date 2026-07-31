@@ -25,16 +25,12 @@ export function SignInForm({ callbackUrl, errorMessage }: SignInFormProps) {
   const sent = state?.ok === true;
 
   return (
-    <div className="card flex w-full max-w-md flex-col gap-6 p-8">
+    <div className="card animate-rise flex w-full max-w-md flex-col gap-6 p-8">
       <div className="flex flex-col gap-2">
-        <span
-          aria-hidden="true"
-          className="flex h-10 w-10 items-center justify-center rounded-xl text-sm font-bold"
-          style={{ background: "var(--brand)", color: "var(--brand-contrast)" }}
-        >
-          AI
+        <span className="brand-mark" aria-hidden="true">
+          A
         </span>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight">Sign in</h1>
+        <h1 className="page-title mt-2 text-3xl">Sign in</h1>
         <p className="text-sm leading-6 muted">
           Continue with Google or get a passwordless link by email.
         </p>
@@ -98,7 +94,11 @@ export function SignInForm({ callbackUrl, errorMessage }: SignInFormProps) {
             </p>
           )}
         </div>
-        <button type="submit" disabled={pending} className="btn btn-secondary w-full">
+        <button
+          type="submit"
+          disabled={pending}
+          className="btn btn-secondary w-full"
+        >
           {pending ? "Sending link…" : "Email me a sign-in link"}
         </button>
       </form>

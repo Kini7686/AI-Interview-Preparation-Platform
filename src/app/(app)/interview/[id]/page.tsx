@@ -38,7 +38,7 @@ export default async function InterviewSessionPage({ params }: PageProps) {
   const position = Math.min(answered + 1, interview.questionCount);
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-6 py-12">
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-6 py-12 animate-rise">
       <header className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center gap-2">
           <span className="badge badge-brand">{interview.role.title}</span>
@@ -47,7 +47,7 @@ export default async function InterviewSessionPage({ params }: PageProps) {
             {MIX_PRESET_LABELS[interview.mixPreset]}
           </span>
         </div>
-        <h1 className="text-3xl font-semibold tracking-tight">Mock interview</h1>
+        <h1 className="page-title text-3xl sm:text-[2.5rem]">Mock interview</h1>
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between gap-3">
             <p className="hint">
